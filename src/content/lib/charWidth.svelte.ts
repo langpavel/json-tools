@@ -1,28 +1,40 @@
 import { createSubscriber } from "svelte/reactivity";
 
-export function useCharWidth(getEl: () => HTMLElement | null) {
-  // Subscriber is recreated when getEl() returns a new element,
-  // because $derived.by re-runs and constructs a fresh one.
-  const charWidth = $derived.by(() => {
-    const el = getEl();
-    if (!el) return 0;
+export class CharWidthMeasurer {
+  #ctx;
+  #subscribe;
+  #element = $state(null as HTMLElement | null);
 
-    const subscribe = createSubscriber((update) => {
+  constructor(element?: HTMLElement | null) {
+    this.#element = element ?? null;
+    this.#ctx = document.createElement("canvas").getContext("2d")!;
+    this.#subscribe = createSubscriber((update) => {
+      if (!element) {
+        console.log("~~ observer");
+        return;
+      }
+      console.log("+ observer");
       const observer = new ResizeObserver(update);
-      observer.observe(el);
-      return () => observer.disconnect();
+      observer.observe(this.#element!);
+      return () => {
+        observer.disconnect();
+        console.log("- observer");
+      };
     });
+  }
 
-    subscribe(); // register reactive dependency on ResizeObserver ticks
+  get current() {
+    if (!this.#element) {
+      return 10;
+    }
 
-    const ctx = document.createElement("canvas").getContext("2d")!;
-    ctx.font = getComputedStyle(el).font;
-    return ctx.measureText("M").width;
-  });
+    this.#subscribe!();
 
-  return {
-    get charWidth() {
-      return charWidth;
-    },
-  };
+    this.#ctx!.font = getComputedStyle(this.#element!).font;
+    return this.#ctx!.measureText("0").width;
+  }
+
+  set element(el: HTMLElement | null) {
+    this.#element = el;
+  }
 }

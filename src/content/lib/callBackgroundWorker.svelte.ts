@@ -8,6 +8,8 @@ export async function callBackgroundWorker<T extends MessageType>(
   type: T,
   payload: OperationPayload<T>,
 ) {
+  $inspect.trace("callBackgroundWorker");
+
   const result: { result: OperationResult<T> } | { error: string } =
     await chrome.runtime.sendMessage({ type, payload });
 
