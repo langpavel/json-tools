@@ -1,28 +1,22 @@
+// vite.config.ts
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import { ENTRIES, type Entry } from "./scripts/entries";
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const isDev = mode === "development";
+  const entry = (process.env.ENTRY ?? ENTRIES[0]) as Entry;
+
   return {
-    plugins: [
-      svelte({
-        compilerOptions: {
-          dev: isDev,
-        },
-      }),
-    ],
+    appType: "custom",
+    plugins: [svelte({ compilerOptions: { dev: isDev } })],
     build: {
       outDir: "dist",
-      emptyOutDir: true,
+      emptyOutDir: entry === ENTRIES[0] && !isDev, // Only empty on the first entry in production build
       rollupOptions: {
-        input: {
-          content: "src/content/index.ts",
-          background: "src/background/index.ts",
-          page: "src/page/index.ts",
-        },
+        input: { [entry]: `src/${entry}/index.ts` },
         output: {
-          format: "module",
+          format: "iife",
           entryFileNames: "[name].js",
         },
       },

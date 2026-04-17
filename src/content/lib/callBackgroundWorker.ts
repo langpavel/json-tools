@@ -4,17 +4,17 @@ import type {
   OperationPayload,
 } from "../../background/index";
 
+import { stringify, parse } from "devalue";
+
 export async function callBackgroundWorker<T extends MessageType>(
   type: T,
   payload: OperationPayload<T>,
 ) {
-  $inspect.trace("callBackgroundWorker");
-
-  const result: { result: OperationResult<T> } | { error: string } =
-    await chrome.runtime.sendMessage({ type, payload });
+  const result: { result: string } | { error: string } =
+    await chrome.runtime.sendMessage({ type, payload: stringify(payload) });
 
   if ("error" in result) {
     throw new Error(result.error);
   }
-  return result.result;
+  return parse(result.result) as OperationResult<T>;
 }
