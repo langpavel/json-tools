@@ -2,7 +2,7 @@ import { mount } from "svelte";
 
 import App from "./lib/components/App.svelte";
 import { detectJSON } from "./lib/detectJSON";
-import { readStoredTheme } from "./lib/theme.svelte";
+import { readStoredTheme } from "./lib/theme/theme.svelte";
 
 const isSandboxed = window.origin === "null";
 
