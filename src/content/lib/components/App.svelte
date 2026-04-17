@@ -57,7 +57,7 @@
 </div>
 
 <style>
-  ::global(html, body) {
+  :global(html, body) {
     width: 100%;
     height: 100%;
     margin: 0;
@@ -78,17 +78,6 @@
     --select-text: #cccccc;
     --select-border: #555555;
     --warning-color: #f0c674;
-
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-    background-color: var(--bg);
-    color: var(--text);
-    font-family:
-      system-ui,
-      -apple-system,
-      sans-serif;
   }
 
   :global(body[data-theme="light"]) {
@@ -107,6 +96,32 @@
     --warning-color: #bf8700;
   }
 
+  .root {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
   header {
     flex-shrink: 0;
     display: flex;
@@ -115,6 +130,7 @@
     padding: 0.5em 0.75em;
     background-color: var(--header-bg);
     border-bottom: 1px solid var(--header-border);
+    user-select: none;
   }
 
   .header-left {
