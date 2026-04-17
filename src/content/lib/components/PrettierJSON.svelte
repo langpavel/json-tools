@@ -44,13 +44,7 @@
 
 <div class="container">
   <div class="ruler" style:width={autoWidth * charMeasure.current + "px"}></div>
-  <pre class="response"><code bind:this={charMeasure.element}
-      >{#each { length: autoWidth } as _, i}{`${i}`[i.toString().length - 3] ??
-          " "}{/each}{"\n"}{#each { length: autoWidth } as _, i}{`${i}`[
-          i.toString().length - 2
-        ] ?? " "}{/each}{"\n"}{#each { length: autoWidth } as _, i}{`${i}`[
-          i.toString().length - 1
-        ]}{/each}{"\n"}{formatted}</code
+  <pre class="response"><code bind:this={charMeasure.element}>{formatted}</code
     ></pre>
 </div>
 

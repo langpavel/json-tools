@@ -1,7 +1,6 @@
 import { analyzeJson } from "./analyzeJson";
 import { formatByJsonStringify } from "./formatByJsonStringify";
 import { formatByPrettier } from "./formatByPrettier";
-import { parseByPrettier } from "./parseByPrettier";
 
 export type Operations = typeof operations;
 export type MessageType = keyof Operations;
@@ -14,7 +13,6 @@ export type OperationPayload<T extends MessageType = MessageType> = Parameters<
 
 const operations = {
   FORMAT_PRETTIER: formatByPrettier,
-  PARSE_PRETTIER: parseByPrettier,
   FORMAT_JSON: formatByJsonStringify,
   ANALYZE_JSON: analyzeJson,
   TEST_ERROR: async () => {
