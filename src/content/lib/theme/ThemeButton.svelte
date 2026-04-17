@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ThemeManager } from "./theme.svelte";
+  import { Sun, Moon } from "@lucide/svelte";
 
   const theme = new ThemeManager();
 
@@ -23,104 +24,10 @@
 >
   {#if theme.current === "dark"}
     <!-- Sun icon -->
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5" />
-      <line
-        x1="8"
-        y1="0.5"
-        x2="8"
-        y2="2.5"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-      <line
-        x1="8"
-        y1="13.5"
-        x2="8"
-        y2="15.5"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-      <line
-        x1="0.5"
-        y1="8"
-        x2="2.5"
-        y2="8"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-      <line
-        x1="13.5"
-        y1="8"
-        x2="15.5"
-        y2="8"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-      <line
-        x1="2.7"
-        y1="2.7"
-        x2="4.1"
-        y2="4.1"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-      <line
-        x1="11.9"
-        y1="11.9"
-        x2="13.3"
-        y2="13.3"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-      <line
-        x1="2.7"
-        y1="13.3"
-        x2="4.1"
-        y2="11.9"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-      <line
-        x1="11.9"
-        y1="4.1"
-        x2="13.3"
-        y2="2.7"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-      />
-    </svg>
+    <Sun width="16" height="16" aria-hidden="true" />
   {:else}
     <!-- Moon icon -->
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M13.5 9.5a5.5 5.5 0 0 1-7-7 5.5 5.5 0 1 0 7 7z"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
+    <Moon width="16" height="16" aria-hidden="true" />
   {/if}
 </button>
 
