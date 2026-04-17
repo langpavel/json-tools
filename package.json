@@ -3,10 +3,8 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "scripts": {
-    "dev": "NODE_ENV=development vite build --watch --mode development",
-    "build": "vite build",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+  "engines": {
+    "node": ">=24"
   },
   "devDependencies": {
     "@lucide/svelte": "^1.3.0",
@@ -15,10 +13,16 @@
     "@tsconfig/svelte": "^5.0.8",
     "@types/chrome": "^0.1.40",
     "@types/node": "^25.6.0",
+    "devalue": "^5.7.1",
     "prettier": "^3.8.3",
     "svelte": "^5.55.1",
     "svelte-check": "^4.4.6",
     "typescript": "~6.0.2",
     "vite": "^8.0.4"
+  },
+  "scripts": {
+    "dev": "node scripts/build.ts --dev",
+    "build": "node scripts/build.ts",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
   }
 }

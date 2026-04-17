@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PrettierOptions } from "../../../background/formatByPrettier";
-  import { callBackgroundWorker } from "../callBackgroundWorker.svelte";
+  import { callBackgroundWorker } from "../callBackgroundWorker";
   import { CharWidthMeasurer } from "../charWidth.svelte";
 
   let {

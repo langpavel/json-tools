@@ -1,6 +1,7 @@
 import { analyzeJson } from "./analyzeJson";
 import { formatByJsonStringify } from "./formatByJsonStringify";
 import { formatByPrettier } from "./formatByPrettier";
+import { parse, stringify } from "devalue";
 
 export type Operations = typeof operations;
 export type MessageType = keyof Operations;
@@ -25,10 +26,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (!operation) {
     return;
   }
-  const operationPromise: Promise<any> = operation(message.payload);
+  const operationPromise: Promise<any> = operation(parse(message.payload));
 
   operationPromise
-    .then((result) => sendResponse({ result }))
+    .then((result) => sendResponse({ result: stringify(result) }))
     .catch((err) => {
       sendResponse({ error: String(err) });
     });
