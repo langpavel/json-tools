@@ -62,3 +62,4 @@ Background Service Worker (background.js)
 - `chunkSizeWarningLimit: 1000` is intentionally high because Prettier is large
 - Minimum Chrome version: 126 (per manifest)
 - See `docs/gotchas.md` for non-obvious behaviors (e.g. why body styles are set via JS)
+- See `docs/codemirror-roadmap.md` for the CodeMirror Editor-mode track (status, milestones, acceptance criteria)

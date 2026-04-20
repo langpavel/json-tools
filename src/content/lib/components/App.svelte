@@ -1,7 +1,5 @@
 <script lang="ts">
-  import type { JSONValue } from "../../../types";
-  import type { Theme } from "../theme/theme.svelte";
-  import { ThemeManager } from "../theme/theme.svelte";
+  import type { DisplayMode, JSONValue } from "../../../types";
   import ThemeButton from "../theme/ThemeButton.svelte";
   import PrettierJSON from "./PrettierJSON.svelte";
 
@@ -15,25 +13,29 @@
     isSandboxed: boolean;
   } = $props();
 
-  let displayMode = $state<"raw" | "prettier">("prettier");
+  let displayMode = $state<DisplayMode>("prettier");
   let tabWidth = $state(2);
+
+  const modes: { id: DisplayMode; label: string; disabled?: boolean }[] = [
+    { id: "raw", label: "Raw" },
+    { id: "prettier", label: "Prettier" },
+    { id: "editor", label: "Editor", disabled: true },
+  ];
 </script>
 
 <div class="root">
   <header>
     <div class="header-left">
-      <button
-        class:active={displayMode === "raw"}
-        onclick={() => {
-          displayMode = "raw";
-        }}>Raw</button
-      >
-      <button
-        class:active={displayMode === "prettier"}
-        onclick={() => {
-          displayMode = "prettier";
-        }}>Prettier</button
-      >
+      {#each modes as mode (mode.id)}
+        <button
+          class:active={displayMode === mode.id}
+          disabled={mode.disabled}
+          title={mode.disabled ? "Coming soon" : undefined}
+          onclick={() => {
+            displayMode = mode.id;
+          }}>{mode.label}</button
+        >
+      {/each}
       <select bind:value={tabWidth}>
         <option value={2}>2</option>
         <option value={4}>4</option>
@@ -149,13 +151,18 @@
     font-size: 0.85em;
   }
 
-  button:hover {
+  button:hover:not(:disabled) {
     background-color: var(--btn-hover-bg);
   }
 
   button.active {
     background-color: var(--btn-active-bg);
     color: var(--btn-active-text);
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 
   select {
