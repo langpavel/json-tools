@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { DisplayMode, JSONValue } from "../../../types";
   import ThemeButton from "../theme/ThemeButton.svelte";
+  import EditorJSON from "./EditorJSON.svelte";
   import PrettierJSON from "./PrettierJSON.svelte";
 
   let {
@@ -19,7 +20,7 @@
   const modes: { id: DisplayMode; label: string; disabled?: boolean }[] = [
     { id: "raw", label: "Raw" },
     { id: "prettier", label: "Prettier" },
-    { id: "editor", label: "Editor", disabled: true },
+    { id: "editor", label: "Editor" },
   ];
 </script>
 
@@ -54,6 +55,8 @@
       <pre style:tab-size={tabWidth}>{rawData}</pre>
     {:else if displayMode === "prettier"}
       <PrettierJSON jsonText={rawData} {tabWidth} />
+    {:else if displayMode === "editor"}
+      <EditorJSON doc={rawData} />
     {/if}
   </section>
 </div>

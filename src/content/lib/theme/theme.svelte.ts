@@ -44,3 +44,5 @@ export class ThemeManager {
     });
   }
 }
+
+export const themeManager = new ThemeManager();

@@ -1,10 +1,10 @@
 # CodeMirror "Editor" mode — roadmap
 
 Canonical status doc for the CodeMirror integration. Tick boxes as milestones land.
-Current state: **M0 complete — M1 next.**
+Current state: **M1 complete — M2 next.**
 
-Bundle baseline (post-M0, CM deps installed but not imported):
-- `dist/content.js`: 64.55 kB (gzip 24.20 kB)
+Bundle (post-M1, CodeMirror mounted):
+- `dist/content.js`: 415.79 kB (gzip 138.10 kB) — delta +113.90 kB gz vs post-M0
 - `dist/background.js`: 618.84 kB (gzip 177.75 kB)
 - `dist/page.js`: 0.33 kB (gzip 0.24 kB)
 
@@ -109,10 +109,10 @@ New: `src/content/lib/components/EditorJSON.svelte`. Edit: `App.svelte`, `docs/g
 7. Enable the Editor button; pass `rawData` as initial `doc`.
 
 **Acceptance:**
-- [ ] Editor button switches content area; CodeMirror visible with JSON highlighting.
-- [ ] Typing works; undo/redo via defaults (Mod-z / Mod-Shift-z).
-- [ ] Theme toggle instantly repaints the editor.
-- [ ] `dist/content.js` delta < +150 KB gz vs post-M0.
+- [x] Editor button switches content area; CodeMirror visible with JSON highlighting.
+- [x] Typing works; undo/redo via defaults (Mod-z / Mod-Shift-z).
+- [x] Theme toggle instantly repaints the editor.
+- [x] `dist/content.js` delta < +150 KB gz vs post-M0. *(+113.90 kB gz)*
 
 ---
 
