@@ -8,6 +8,15 @@ Bundle baseline (post-M0, CM deps installed but not imported):
 - `dist/background.js`: 618.84 kB (gzip 177.75 kB)
 - `dist/page.js`: 0.33 kB (gzip 0.24 kB)
 
+## Cold-start checklist (run at the top of every session)
+
+1. `git log --oneline main..HEAD` — see where the branch stands.
+2. Open this doc, jump to the active milestone's **Steps** and **Acceptance** blocks. Do not load files outside that milestone's scope.
+3. Read only the files listed in that milestone's header (e.g. M1: `EditorJSON.svelte` doesn't exist yet; read `App.svelte`, `theme.svelte.ts`, `charWidth.svelte.ts`). Avoid spawning research agents — the roadmap already captures research.
+4. Execute steps, tick acceptance boxes, update the `dist/content.js` size line at the top of this doc, commit with the suggested message for that milestone, stop.
+
+When the milestone is shipped, `/clear` or `/compact` the assistant context; the next session reads this doc again fresh.
+
 ## Context
 
 The extension currently ships two view modes: **Raw** (`<pre>`) and **Prettier** (Prettier-formatted `<pre>` with dynamic `printWidth`). This track adds a third **Editor** mode backed by CodeMirror 6, a command palette that drives actions, and JSON-Schema inference from the current buffer.
@@ -306,6 +315,23 @@ Add to `docs/gotchas.md` as each lands:
 2. `pnpm build` — record `dist/content.js` size.
 3. Load `dist/` unpacked in Chrome, open `https://api.github.com/repos/sveltejs/svelte` (or similar).
 4. Tick acceptance boxes. Fix before next milestone.
+
+## Suggested commit messages (one per milestone)
+
+Use as a starting point; tighten to match actual diff.
+
+| Milestone | Message |
+|---|---|
+| M0 | `feat(codemirror): M0 foundations — install deps, widen DisplayMode, seed roadmap` *(done — 7968ec5)* |
+| M1 | `feat(codemirror): M1 mount EditorJSON with JSON highlighting and theme sync` |
+| M2 | `feat(codemirror): M2 command palette shell with Mod-Shift-P keybind` |
+| M3 | `feat(codemirror): M3 add "Format with Prettier" command (Shift-Alt-F)` |
+| M4 | `feat(codemirror): M4 structural JSON Schema inference + new-tab viewer` |
+| M4b | `feat(codemirror): M4b adaptive default mode by content size` |
+| M5 | `feat(codemirror): M5 heuristics — formats, enum, multiSample, discriminator` |
+| M6 | `feat(codemirror): M6 heuristics sidebar with live re-inference` |
+| M7 | `feat(codemirror): M7 secondary commands — copy/download/minify/fold` |
+| M8 | `chore(codemirror): M8 polish, gotchas doc pass, ship` |
 
 ## Risks and mitigations
 
