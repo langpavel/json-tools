@@ -39,9 +39,11 @@ Background Service Worker (background.js)
 |------|---------|
 | `src/content/index.ts` | Entry point: detects JSON, mounts Svelte app |
 | `src/content/lib/detectJSON.ts` | Detects JSON via `<pre>` tag or Content-Type header |
-| `src/content/lib/components/App.svelte` | Main UI: mode toggle (raw/prettier), tab width selector |
+| `src/content/lib/components/App.svelte` | Main UI: mode toggle (raw/prettier/edit), tab width selector, inline logo |
 | `src/content/lib/components/PrettierJSON.svelte` | Responsive Prettier output, recalculates `printWidth` on resize |
+| `src/content/lib/components/JsonEditor.svelte` | CodeMirror 6 editable JSON view — local scratchpad, edits discarded on mode switch |
 | `src/content/lib/charWidth.svelte.ts` | Svelte 5 reactive utility — measures monospace char width via Canvas |
+| `src/content/lib/theme/theme.svelte.ts` | `ThemeManager` class + shared `themeManager` singleton. Consumers import the singleton |
 | `src/background/index.ts` | Operation registry + message listener |
 | `src/background/formatByPrettier.ts` | Prettier standalone formatter |
 | `src/page/index.ts` | Exposes JSON to `window.data` in page context |
@@ -54,11 +56,13 @@ Background Service Worker (background.js)
 - **Vite 8** with three entry points → `dist/{content,background,page}.js`
 - **TypeScript 6** — strict, `checkJs: true`
 - **Prettier 3** bundled into the background worker (~600 KB output)
+- **CodeMirror 6** powers the Edit mode, bundled into `content.js`. Packages in use: `@codemirror/{state,view,commands,language,lang-json,lint,search,theme-one-dark}`. CM6 injects its own styles at runtime (`StyleModule`), which coexists with the Svelte plugin's `css: { injected: true }` — see gotchas.
 
 ## Notes
 
 - `analyzeJson.ts` is a stub — the analyze operation is not yet implemented
 - The extension sets `css: { injected: true }` in svelte config so styles are inlined into `content.js`
-- `chunkSizeWarningLimit: 1000` is intentionally high because Prettier is large
+- `chunkSizeWarningLimit: 3000` is intentionally high because Prettier and CodeMirror are large
+- `vite.config.ts` registers an `escapeChromeRejectedChars()` plugin that post-processes `dist/*.js` to escape literal `U+FFFF` / `U+FFFE` — Chrome rejects bundles containing them with a misleading "isn't UTF-8 encoded" error. **Do not remove.** See `docs/gotchas.md`.
 - Minimum Chrome version: 126 (per manifest)
-- See `docs/gotchas.md` for non-obvious behaviors (e.g. why body styles are set via JS)
+- See `docs/gotchas.md` for non-obvious behaviors (e.g. why body styles are set via JS, the shared `ThemeManager` singleton, the U+FFFF escape plugin)

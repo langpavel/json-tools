@@ -1,47 +1,65 @@
-# Svelte + TS + Vite
+# JSON Tools
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+A Chrome extension (Manifest v3) that detects when the browser is showing
+raw JSON and replaces it with a readable UI — Prettier-formatted with a
+responsive print-width, a raw view, and a CodeMirror 6 editable scratchpad
+with JSON syntax highlighting, parse-error diagnostics, folding, and search.
 
-## Recommended IDE Setup
+Works on any JSON served from a URL or opened as a local `file://`, including
+sandboxed origins.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Install (unpacked, for local dev)
 
-## Need an official Svelte framework?
+Requires **Node 24+** and **pnpm**.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
-
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+pnpm install
+pnpm build
 ```
+
+Then in Chrome:
+
+1. Open `chrome://extensions`.
+2. Enable **Developer mode** (top-right).
+3. Click **Load unpacked** and select the `dist/` directory.
+4. Open any JSON page (e.g. `https://api.github.com/repos/sveltejs/svelte`).
+
+**Minimum Chrome version: 126** — set in `public/manifest.json`.
+
+## Development
+
+```bash
+pnpm dev      # watch mode; rebuilds dist/ on file changes
+pnpm build    # production build
+pnpm check    # Svelte + TypeScript type-check (the project's gate; there is no test framework)
+```
+
+After a rebuild, click the reload icon on the extension card in
+`chrome://extensions` — or **Remove** and **Load unpacked** again if Chrome
+appears to cache a prior broken build (see `docs/gotchas.md` for the one
+failure mode where that's required).
+
+## Modes
+
+The UI header exposes three view modes:
+
+| Mode     | Purpose                                                                 |
+| -------- | ----------------------------------------------------------------------- |
+| Raw      | Untouched source text with a configurable tab-size rendering hint.      |
+| Prettier | Responsive pretty-print; recalculates `printWidth` on resize.           |
+| Edit     | CodeMirror 6 editor with JSON lint/fold/search. Edits are local-only.   |
+
+Edit mode is a **scratchpad** — changes live in the editor buffer and are
+discarded when you switch modes. There is deliberately no "apply" button.
+
+## Further reading
+
+- [`CLAUDE.md`](CLAUDE.md) — architecture, key files, stack.
+- [`docs/gotchas.md`](docs/gotchas.md) — non-obvious behaviors
+  (sandboxed-origin body styles, the shared `ThemeManager` singleton,
+  CodeMirror runtime style injection, Chrome's `U+FFFF`/`U+FFFE` bundle
+  rejection and how `vite.config.ts` works around it).
+- [`docs/brand.md`](docs/brand.md) — visual identity: name, logo, palette,
+  type.
+- [`docs/store-assets/`](docs/store-assets/) — template SVGs for the Chrome
+  Web Store listing.
