@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE — open in Inkscape/Figma and polish before uploading to the
+     Chrome Web Store. Size matches the official "small promo" tile. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280">
+  <rect width="440" height="280" fill="#1e1e1e"/>
+  <g transform="translate(40,92)">
+    <g transform="scale(1.5)">
+      <rect width="64" height="64" rx="14" ry="14" fill="#ffffff"/>
+      <path fill="#f1592b" d="M 30,30 H 18 v 4 h 12 v 12 h 4 V 34 H 46 V 30 H 34 V 18 h -4 z"/>
+      <path fill="#d4d4d4" d="m 2,34 v -4 c 4,0 6,0 6,-6 V 16 C 8,10 10,8 18,8 v 4 c -4,0 -6,0 -6,4 v 8 c 0,3 0,7 -6,8 6,1 6,5 6,8 0,1 0,7 0,8 0,4 2,4 6,4 v 4 C 10,56 8,54 8,48 V 40 C 8,35 6,34 2,34 Z"/>
+      <path fill="#d4d4d4" d="m 62,30 v 4 c -4,0 -6,0 -6,6 v 8 c 0,6 -2,8 -10,8 v -4 c 4,0 6,0 6,-4 v -8 c 0,-3 0,-7 6,-8 -6,-1 -6,-5 -6,-8 0,-1 0,-7 0,-8 0,-4 -2,-4 -6,-4 V 8 c 8,0 10,2 10,8 v 8 c 0,5 2,6 6,6 z"/>
+    </g>
+  </g>
+  <g font-family="system-ui, -apple-system, sans-serif" fill="#d4d4d4">
+    <text x="168" y="132" font-size="34" font-weight="600" letter-spacing="0.5">JSON Tools</text>
+    <text x="168" y="164" font-size="16" font-weight="400" opacity="0.75">Readable JSON, anywhere the browser</text>
+    <text x="168" y="184" font-size="16" font-weight="400" opacity="0.75">shows it.</text>
+  </g>
+  <text x="412" y="268" font-family="system-ui" font-size="9" fill="#555" text-anchor="end">TEMPLATE</text>
+</svg>

@@ -44,3 +44,10 @@ export class ThemeManager {
     });
   }
 }
+
+/**
+ * Shared instance used by every consumer in the content script (header button,
+ * editor, body-style $effect). Using one instance avoids multiple MQL
+ * listeners and keeps reactive state in sync across components.
+ */
+export const themeManager = new ThemeManager();

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE — layout mock. Replace JSON body with a real capture before
+     uploading. Size matches one of the accepted Chrome Web Store
+     screenshot resolutions. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <!-- Page surface -->
+  <rect width="1280" height="800" fill="#1e1e1e"/>
+
+  <!-- Header chrome -->
+  <rect x="0" y="0" width="1280" height="56" fill="#252526"/>
+  <line x1="0" y1="56" x2="1280" y2="56" stroke="#3c3c3c" stroke-width="1"/>
+
+  <!-- Logo + wordmark -->
+  <g transform="translate(16,18)">
+    <g transform="scale(0.3125)">
+      <rect width="64" height="64" rx="14" ry="14" fill="#ffffff"/>
+      <path fill="#f1592b" d="M 30,30 H 18 v 4 h 12 v 12 h 4 V 34 H 46 V 30 H 34 V 18 h -4 z"/>
+      <path fill="#d4d4d4" d="m 2,34 v -4 c 4,0 6,0 6,-6 V 16 C 8,10 10,8 18,8 v 4 c -4,0 -6,0 -6,4 v 8 c 0,3 0,7 -6,8 6,1 6,5 6,8 0,1 0,7 0,8 0,4 2,4 6,4 v 4 C 10,56 8,54 8,48 V 40 C 8,35 6,34 2,34 Z"/>
+      <path fill="#d4d4d4" d="m 62,30 v 4 c -4,0 -6,0 -6,6 v 8 c 0,6 -2,8 -10,8 v -4 c 4,0 6,0 6,-4 v -8 c 0,-3 0,-7 6,-8 -6,-1 -6,-5 -6,-8 0,-1 0,-7 0,-8 0,-4 -2,-4 -6,-4 V 8 c 8,0 10,2 10,8 v 8 c 0,5 2,6 6,6 z"/>
+    </g>
+  </g>
+  <text x="46" y="34" font-family="system-ui" font-size="13" font-weight="500" fill="#d4d4d4" opacity="0.85">JSON Tools</text>
+
+  <!-- Mode buttons -->
+  <g font-family="system-ui" font-size="13" fill="#cccccc">
+    <rect x="148" y="16" width="54" height="26" rx="4" fill="#3c3c3c"/>
+    <text x="175" y="33" text-anchor="middle">Raw</text>
+    <rect x="208" y="16" width="72" height="26" rx="4" fill="#007acc"/>
+    <text x="244" y="33" text-anchor="middle" fill="#ffffff">Prettier</text>
+    <rect x="286" y="16" width="54" height="26" rx="4" fill="#3c3c3c"/>
+    <text x="313" y="33" text-anchor="middle">Edit</text>
+    <rect x="346" y="16" width="50" height="26" rx="4" fill="#3c3c3c" stroke="#555" stroke-width="1"/>
+    <text x="371" y="33" text-anchor="middle">2</text>
+  </g>
+
+  <!-- Theme toggle on the right -->
+  <circle cx="1258" cy="29" r="8" fill="none" stroke="#cccccc" stroke-width="1.5"/>
+
+  <!-- Ruler overlay -->
+  <rect x="16" y="80" width="560" height="700" fill="rgba(127,127,127,0.05)"/>
+  <line x1="576" y1="80" x2="576" y2="780" stroke="rgba(127,127,127,0.4)" stroke-width="1"/>
+
+  <!-- Placeholder JSON body -->
+  <g font-family='"JetBrains Mono", "SF Mono", Consolas, monospace' font-size="14" fill="#d4d4d4">
+    <text x="32"  y="104">{</text>
+    <text x="60"  y="128"><tspan fill="#9cdcfe">"product"</tspan>: <tspan fill="#ce9178">"JSON Tools"</tspan>,</text>
+    <text x="60"  y="150"><tspan fill="#9cdcfe">"features"</tspan>: [</text>
+    <text x="88"  y="172"><tspan fill="#ce9178">"syntax highlight"</tspan>,</text>
+    <text x="88"  y="194"><tspan fill="#ce9178">"code folding"</tspan>,</text>
+    <text x="88"  y="216"><tspan fill="#ce9178">"search panel"</tspan>,</text>
+    <text x="88"  y="238"><tspan fill="#ce9178">"theme sync"</tspan></text>
+    <text x="60"  y="260">],</text>
+    <text x="60"  y="282"><tspan fill="#9cdcfe">"minChrome"</tspan>: <tspan fill="#b5cea8">126</tspan>,</text>
+    <text x="60"  y="304"><tspan fill="#9cdcfe">"modes"</tspan>: {</text>
+    <text x="88"  y="326"><tspan fill="#9cdcfe">"raw"</tspan>: <tspan fill="#569cd6">true</tspan>,</text>
+    <text x="88"  y="348"><tspan fill="#9cdcfe">"prettier"</tspan>: <tspan fill="#569cd6">true</tspan>,</text>
+    <text x="88"  y="370"><tspan fill="#9cdcfe">"edit"</tspan>: <tspan fill="#569cd6">true</tspan></text>
+    <text x="60"  y="392">}</text>
+    <text x="32"  y="414">}</text>
+  </g>
+
+  <text x="1264" y="790" font-family="system-ui" font-size="11" fill="#555" text-anchor="end">TEMPLATE</text>
+</svg>

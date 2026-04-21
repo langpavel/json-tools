@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { ThemeManager } from "./theme.svelte";
+  import { themeManager as theme } from "./theme.svelte";
   import { Sun, Moon } from "@lucide/svelte";
-
-  const theme = new ThemeManager();
 
   // Sync body styles reactively — required for sandboxed pages
   // where ::global CSS from content scripts is ignored
