@@ -21,7 +21,25 @@ async function init(): Promise<void> {
   document.body.style.cssText = `margin:0;padding:0;background-color:${bg};color:${color};`;
 
   const body = window.document.body;
-  body.innerHTML = "";
+
+  // Preserve the browser-native <pre> that Chrome wraps JSON responses in.
+  // Keeping it alive means Raw mode costs zero JS rendering work, which is
+  // the whole point — the tab stays responsive on pathologically large
+  // payloads. `null` when Chrome didn't use a <pre> (e.g. Content-Type-only
+  // detection or sandboxed origins); in that case App.svelte renders a
+  // Svelte-owned <pre> fallback.
+  const nativePre = body.querySelector<HTMLPreElement>(":scope > pre");
+
+  // Remove every body child except nativePre, including stray text nodes.
+  for (const child of Array.from(body.childNodes)) {
+    if (child !== nativePre) body.removeChild(child);
+  }
+
+  // Svelte mount target goes first so the header renders above the native
+  // pre if they're still siblings when the first frame paints, before the
+  // reparent effect in App.svelte fires.
+  const appElement = document.createElement("div");
+  body.insertBefore(appElement, body.firstChild);
 
   const dataElement = document.createElement("script");
   dataElement.setAttribute("type", "application/json");
@@ -29,12 +47,9 @@ async function init(): Promise<void> {
   dataElement.textContent = rawData;
   body.appendChild(dataElement);
 
-  const appElement = document.createElement("div");
-  body.appendChild(appElement);
-
   mount(App, {
     target: appElement,
-    props: { data, rawData, isSandboxed, initialTheme },
+    props: { data, rawData, nativePre, isSandboxed, initialTheme },
   });
 
   if (!isSandboxed) {

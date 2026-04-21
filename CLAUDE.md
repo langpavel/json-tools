@@ -39,10 +39,8 @@ Background Service Worker (background.js)
 |------|---------|
 | `src/content/index.ts` | Entry point: detects JSON, mounts Svelte app |
 | `src/content/lib/detectJSON.ts` | Detects JSON via `<pre>` tag or Content-Type header |
-| `src/content/lib/components/App.svelte` | Main UI: mode toggle (raw/prettier/edit), tab width selector, inline logo |
-| `src/content/lib/components/PrettierJSON.svelte` | Responsive Prettier output, recalculates `printWidth` on resize |
-| `src/content/lib/components/JsonEditor.svelte` | CodeMirror 6 editable JSON view — local scratchpad, edits discarded on mode switch |
-| `src/content/lib/charWidth.svelte.ts` | Svelte 5 reactive utility — measures monospace char width via Canvas |
+| `src/content/lib/components/App.svelte` | Main UI: mode toggle (raw/edit), tab width selector, inline logo. Reparents the browser-native `<pre>` into `.content` when mode is Raw |
+| `src/content/lib/components/JsonEditor.svelte` | CodeMirror 6 editable view. Owns Prettier formatting — calls `FORMAT_PRETTIER` with a `printWidth` derived from the editor's own content width via `defaultCharacterWidth` + `ResizeObserver` |
 | `src/content/lib/theme/theme.svelte.ts` | `ThemeManager` class + shared `themeManager` singleton. Consumers import the singleton |
 | `src/background/index.ts` | Operation registry + message listener |
 | `src/background/formatByPrettier.ts` | Prettier standalone formatter |
@@ -60,6 +58,8 @@ Background Service Worker (background.js)
 
 ## Notes
 
+- **Keep Prettier for JSON formatting.** `JSON.stringify(v, null, w)` is not a substitute — Prettier's `printWidth`-aware packing keeps short objects and arrays on one line when they fit (e.g. `"point": { "x": 1, "y": 2 }` stays one line instead of exploding to three), which is the feature users actually come for. The editor's initial doc is populated via the `FORMAT_PRETTIER` background op, and `printWidth` is recomputed from the editor's content width on resize.
+- **Raw is the default mode** and Chrome's browser-native `<pre>` is preserved across the `content.js` takeover — `src/content/index.ts` only removes siblings, never the pre itself. This guarantees Raw costs zero JS render work, so the tab stays responsive on pathologically large payloads. `nativePre` is `null` when Chrome didn't use a pre (Content-Type path, sandboxed origins); App.svelte renders a Svelte-owned `<pre>` fallback in that case.
 - `analyzeJson.ts` is a stub — the analyze operation is not yet implemented
 - The extension sets `css: { injected: true }` in svelte config so styles are inlined into `content.js`
 - `chunkSizeWarningLimit: 3000` is intentionally high because Prettier and CodeMirror are large

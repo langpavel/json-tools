@@ -1,10 +1,15 @@
 <!--
-  JsonEditor: CodeMirror 6 editable view of the raw JSON.
+  JsonEditor: CodeMirror 6 view for Prettier-formatted JSON.
 
-  NOTE: edits here are LOCAL-ONLY — they live in the editor's own buffer and
-  are discarded when the user switches modes. There is deliberately no
-  write-back to `rawData`. If "apply edits" is needed later, it's a separate
-  feature.
+  On mount the doc is empty — we then call the FORMAT_PRETTIER background
+  op with a printWidth derived from the editor's own content width, and
+  replace the whole doc when it returns. This keeps mount instant even
+  for very large payloads; Prettier runs off the main thread.
+
+  Edits typed into the editor are LOCAL-ONLY: they live in the editor's
+  own buffer and are discarded whenever a new format arrives (tabWidth
+  change, window resize) or the user switches modes. There is deliberately
+  no write-back to the source document.
 -->
 <script lang="ts">
   import { onMount } from "svelte";
@@ -34,17 +39,24 @@
   } from "@codemirror/language";
   import { json, jsonParseLinter } from "@codemirror/lang-json";
   import { lintGutter, linter, lintKeymap } from "@codemirror/lint";
-  import { search, searchKeymap, highlightSelectionMatches } from "@codemirror/search";
+  import {
+    search,
+    searchKeymap,
+    highlightSelectionMatches,
+  } from "@codemirror/search";
   import { oneDark } from "@codemirror/theme-one-dark";
   import { themeManager } from "../theme/theme.svelte";
+  import { callBackgroundWorker } from "../callBackgroundWorker";
+  import type { PrettierOptions } from "../../../background/formatByPrettier";
 
   let {
-    jsonText,
+    rawData,
     tabWidth,
-  }: { jsonText: string; tabWidth: number } = $props();
+  }: { rawData: string; tabWidth: number } = $props();
 
   let host: HTMLDivElement | undefined = $state();
-  let view: EditorView | undefined;
+  let view = $state<EditorView | undefined>(undefined);
+  let printWidth = $state(80);
   const themeCompartment = new Compartment();
   const tabCompartment = new Compartment();
 
@@ -52,11 +64,18 @@
     return theme === "dark" ? oneDark : [];
   }
 
+  function computePrintWidth(v: EditorView): number {
+    const charW = v.defaultCharacterWidth || 8;
+    const contentW = v.contentDOM.clientWidth;
+    const cols = Math.floor(contentW / charW - 2.5);
+    return Math.max(20, cols);
+  }
+
   onMount(() => {
     if (!host) return;
 
     const state = EditorState.create({
-      doc: jsonText,
+      doc: "",
       extensions: [
         lineNumbers(),
         highlightActiveLineGutter(),
@@ -92,15 +111,23 @@
       ],
     });
 
-    view = new EditorView({ state, parent: host });
+    const v = new EditorView({ state, parent: host });
+    view = v;
+    printWidth = computePrintWidth(v);
+
+    const ro = new ResizeObserver(() => {
+      if (view) printWidth = computePrintWidth(view);
+    });
+    ro.observe(v.scrollDOM);
 
     return () => {
+      ro.disconnect();
       view?.destroy();
       view = undefined;
     };
   });
 
-  // Sync the theme compartment when the shared ThemeManager flips.
+  // Sync theme compartment when the shared ThemeManager flips.
   $effect(() => {
     const t = themeManager.current;
     view?.dispatch({
@@ -108,12 +135,32 @@
     });
   });
 
-  // Sync indent unit when tabWidth prop changes.
+  // Format rawData via Prettier whenever inputs change; replace the whole doc.
   $effect(() => {
+    const v = view;
     const w = tabWidth;
-    view?.dispatch({
-      effects: tabCompartment.reconfigure(indentUnit.of(" ".repeat(w))),
+    const pw = printWidth;
+    const text = rawData;
+    if (!v) return;
+    let cancelled = false;
+    callBackgroundWorker("FORMAT_PRETTIER", {
+      text,
+      options: {
+        parser: "json",
+        tabWidth: w,
+        printWidth: pw,
+        useTabs: false,
+      } satisfies PrettierOptions,
+    }).then((formatted) => {
+      if (cancelled || !view) return;
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: formatted },
+        effects: tabCompartment.reconfigure(indentUnit.of(" ".repeat(w))),
+      });
     });
+    return () => {
+      cancelled = true;
+    };
   });
 </script>
 

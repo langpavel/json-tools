@@ -4,17 +4,18 @@
   import type { Theme } from "../theme/theme.svelte";
   import { themeManager } from "../theme/theme.svelte";
   import ThemeButton from "../theme/ThemeButton.svelte";
-  import PrettierJSON from "./PrettierJSON.svelte";
   import JsonEditor from "./JsonEditor.svelte";
 
   let {
     data,
     rawData,
+    nativePre,
     isSandboxed,
     initialTheme,
   }: {
     data: JSONValue;
     rawData: string;
+    nativePre: HTMLPreElement | null;
     isSandboxed: boolean;
     initialTheme?: Theme;
   } = $props();
@@ -28,8 +29,26 @@
     }
   });
 
-  let displayMode = $state<"raw" | "prettier" | "edit">("prettier");
+  // Raw is the default because it costs zero JS render work — the native
+  // <pre> is simply reparented into `.content`. First paint stays responsive
+  // regardless of payload size; editing is opt-in.
+  let displayMode = $state<"raw" | "edit">("raw");
   let tabWidth = $state(2);
+  let contentEl: HTMLElement | undefined = $state();
+
+  // Move the preserved browser-native <pre> in and out of the content area
+  // as the mode toggles. When it's null (sandboxed / Content-Type path), the
+  // template renders a Svelte-owned <pre> fallback instead.
+  $effect(() => {
+    if (!contentEl || !nativePre) return;
+    if (displayMode === "raw") {
+      if (nativePre.parentElement !== contentEl) {
+        contentEl.appendChild(nativePre);
+      }
+    } else if (nativePre.parentElement === contentEl) {
+      nativePre.remove();
+    }
+  });
 </script>
 
 <div class="root">
@@ -66,12 +85,6 @@
         }}>Raw</button
       >
       <button
-        class:active={displayMode === "prettier"}
-        onclick={() => {
-          displayMode = "prettier";
-        }}>Prettier</button
-      >
-      <button
         class:active={displayMode === "edit"}
         onclick={() => {
           displayMode = "edit";
@@ -90,13 +103,12 @@
     <ThemeButton />
   </header>
 
-  <section class="content">
-    {#if displayMode === "raw"}
+  <section class="content" bind:this={contentEl}>
+    {#if displayMode === "edit"}
+      <JsonEditor {rawData} {tabWidth} />
+    {:else if !nativePre}
+      <!-- sandboxed / Content-Type fallback: no browser-native <pre> to reparent -->
       <pre style:tab-size={tabWidth}>{rawData}</pre>
-    {:else if displayMode === "prettier"}
-      <PrettierJSON jsonText={rawData} {tabWidth} />
-    {:else if displayMode === "edit"}
-      <JsonEditor jsonText={rawData} {tabWidth} />
     {/if}
   </section>
 </div>
@@ -248,5 +260,13 @@
     flex: 1;
     overflow: auto;
     min-height: 0;
+  }
+
+  /* The browser-native <pre> is reparented here in Raw mode — it lives
+     outside Svelte's tree so we need :global. Leave its font/color alone;
+     inheriting the default browser rendering is the whole point. */
+  .content :global(> pre) {
+    margin: 0;
+    padding: 0 1ch;
   }
 </style>
