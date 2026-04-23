@@ -13,6 +13,7 @@
 -->
 <script lang="ts">
   import { onMount } from "svelte";
+
   import { EditorState, Compartment } from "@codemirror/state";
   import {
     EditorView,
@@ -21,6 +22,10 @@
     highlightActiveLine,
     keymap,
     drawSelection,
+    highlightSpecialChars,
+    dropCursor,
+    rectangularSelection,
+    crosshairCursor,
   } from "@codemirror/view";
   import {
     defaultKeymap,
@@ -40,11 +45,19 @@
   import { json, jsonParseLinter } from "@codemirror/lang-json";
   import { lintGutter, linter, lintKeymap } from "@codemirror/lint";
   import {
+    autocompletion,
+    closeBrackets,
+    closeBracketsKeymap,
+    completionKeymap,
+  } from "@codemirror/autocomplete";
+  import {
     search,
     searchKeymap,
     highlightSelectionMatches,
   } from "@codemirror/search";
+
   import { oneDark } from "@codemirror/theme-one-dark";
+
   import { themeManager } from "../theme/theme.svelte";
   import { callBackgroundWorker } from "../callBackgroundWorker";
   import type { PrettierOptions } from "../../../background/formatByPrettier";
@@ -52,11 +65,19 @@
   let {
     rawData,
     tabWidth,
-  }: { rawData: string; tabWidth: number } = $props();
+    printWidth,
+    debug,
+  }: {
+    rawData: string;
+    tabWidth: number;
+    printWidth: number | "auto";
+    debug: boolean;
+  } = $props();
 
   let host: HTMLDivElement | undefined = $state();
+  let clientWidth = $state(600);
   let view = $state<EditorView | undefined>(undefined);
-  let printWidth = $state(80);
+
   const themeCompartment = new Compartment();
   const tabCompartment = new Compartment();
 
@@ -66,25 +87,35 @@
 
   function computePrintWidth(v: EditorView): number {
     const charW = v.defaultCharacterWidth || 8;
-    const contentW = v.contentDOM.clientWidth;
-    const cols = Math.floor(contentW / charW - 2.5);
+    const cols = Math.floor(clientWidth / charW - 9);
     return Math.max(20, cols);
   }
 
-  onMount(() => {
-    if (!host) return;
+  let realPrintWidth = $derived.by(() => {
+    if (typeof printWidth === "number") return printWidth;
+    return computePrintWidth(view!);
+  });
 
+  function createEditorView(parent: Element): EditorView {
     const state = EditorState.create({
       doc: "",
+
       extensions: [
         lineNumbers(),
         highlightActiveLineGutter(),
+        highlightSpecialChars(),
+        history(),
         foldGutter(),
         drawSelection(),
-        history(),
+        dropCursor(),
+        EditorState.allowMultipleSelections.of(true),
         indentOnInput(),
-        bracketMatching(),
         syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        bracketMatching(),
+        closeBrackets(),
+        autocompletion(),
+        rectangularSelection(),
+        crosshairCursor(),
         highlightActiveLine(),
         highlightSelectionMatches(),
         search({ top: true }),
@@ -94,13 +125,16 @@
         tabCompartment.of(indentUnit.of(" ".repeat(tabWidth))),
         themeCompartment.of(themeExtension(themeManager.current)),
         keymap.of([
+          ...closeBracketsKeymap,
           ...defaultKeymap,
+          ...searchKeymap,
           ...historyKeymap,
           ...foldKeymap,
-          ...searchKeymap,
+          ...completionKeymap,
           ...lintKeymap,
           indentWithTab,
         ]),
+
         EditorView.theme({
           "&": { height: "100%" },
           ".cm-scroller": {
@@ -111,17 +145,14 @@
       ],
     });
 
-    const v = new EditorView({ state, parent: host });
-    view = v;
-    printWidth = computePrintWidth(v);
+    return new EditorView({ state, parent });
+  }
 
-    const ro = new ResizeObserver(() => {
-      if (view) printWidth = computePrintWidth(view);
-    });
-    ro.observe(v.scrollDOM);
+  onMount(() => {
+    if (!host) return;
 
+    view = createEditorView(host);
     return () => {
-      ro.disconnect();
       view?.destroy();
       view = undefined;
     };
@@ -139,9 +170,18 @@
   $effect(() => {
     const v = view;
     const w = tabWidth;
-    const pw = printWidth;
+    const pw = realPrintWidth;
     const text = rawData;
     if (!v) return;
+
+    if (debug) {
+      console.log("formatting with Prettier", {
+        textLength: text.length,
+        tabWidth: w,
+        printWidth: pw,
+      });
+    }
+
     let cancelled = false;
     callBackgroundWorker("FORMAT_PRETTIER", {
       text,
@@ -164,7 +204,7 @@
   });
 </script>
 
-<div class="editor" bind:this={host}></div>
+<div bind:clientWidth class="editor" bind:this={host}></div>
 
 <style>
   .editor {
